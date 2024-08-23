@@ -1,0 +1,76 @@
+{% load static %}
+{% load custom_filters %}
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddit Advice</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    
+    <script src="functions.js"></script>  
+  </head>
+  <body>
+    <div  class="container text-center">
+	    <h1>Reddit Advice</h1>
+    </div>
+    <nav class="navbar navbar-dark bg-dark justify-content-center">
+	    <form class="form-inline" method="POST" action="{% url 'search' %}">
+        {% csrf_token %}
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="query">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit" >Search</button>
+      </form>
+    </nav>
+
+    {% if query %}
+      <div class="container mt-4 text-center">
+        <h2>Search Results</h2>
+        <p>Showing results for: <i>{{ query }}</i> </p>
+        {% for result in results %}
+          <div class="card text-center">
+            <div class="card-header">
+              <div class="card-header-left">
+                <strong>Subreddit: </strong>  {{ result.subreddit }}
+              </div>
+            </div>
+            <div class="card-body">
+              <a href="{{ result.url }}" target="_blank"><h5 class="card-title">{{ result.title }}</h5></a>
+              <p class="card-text">{{ result.text | truncate_with_ellipsis:350 }}</p>
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal{{ forloop.counter }}" 
+                      data-title="{{ result.title }}" data-text="{{ result.text }}">
+                View More
+              </button>
+            </div>
+          </div>
+          <div style="margin-bottom: 50px"></div>
+
+          <!-- Modal -->
+          <div class="modal fade" id="exampleModal{{ forloop.counter }}" tabindex="-1" aria-labelledby="exampleModalLabel{{ forloop.counter }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel{{ forloop.counter }}">{{ result.title }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  {{ result.text }}
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+  </body>
+</html>
